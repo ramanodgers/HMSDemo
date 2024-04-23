@@ -18,9 +18,7 @@ def greet(image, dist, choice):
 
 demo = gr.Interface(
     fn=greet,
-    inputs=[gr.Image(), 
-            gr.Slider(0, 10, step = 1, label = "Error Distance"), 
-            gr.Radio(["Big CLDPC", "Small CLDPC","Surface 25","Steane 17"], label="Parity-Check matrix", info="What matrix should we use?", value = 'Big CLDPC')],
+    inputs=[gr.Image()],
 
     outputs=[gr.Textbox(label="EEG class")],
 
