@@ -1,4 +1,3 @@
-# HMSDemo
 title: HMSDemo
 emoji: 🤗
 colorFrom: blue
