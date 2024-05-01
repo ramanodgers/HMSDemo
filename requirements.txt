@@ -1,0 +1,13 @@
+torchvision
+sktime[mlflow]
+torchvision
+timm
+numpy
+pandas
+tsfresh
+pandas
+numpy
+joblib
+gradio
+warnings
+huggingface_hub

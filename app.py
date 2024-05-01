@@ -1,7 +1,19 @@
 import gradio as gr
 import warnings 
 import joblib 
+from sktime.utils import mlflow_sktime
 from utils import *
+from huggingface_hub import hf_hub_download
+
+
+REPO_ID = "ramanodgers/HMSensemble"
+FILENAME = "ensemble_1.pth"
+
+xg_model = joblib.load(hf_hub_download(repo_id=REPO_ID, filename="xgboost_model.pkl"))
+weights = joblib.load(
+    hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
+)
+
 
 description = ''' This is a Demo of our COMS 4995 Applied Computer Vision semester project: an ensemble method classification tool for EEG diagnoses.
 Drag and drop an image or eeg parquet file and (hopefully) you'll get your result 
@@ -12,15 +24,14 @@ Authors: Raman Odgers, Akhil Golla, Vinayak Kannan, Sohan Kshirsagar
 #this needs to be changed to load weights from HF and path the support models
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    rocket_model = mlflow_sktime.load_model(model_uri=paths.ROCKET_DIR)
-xg_model = joblib.load(paths.XG_MODEL)
+    rocket_model = mlflow_sktime.load_model(model_uri="/rocket/")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 EN_model = EfficientNet(config)
 Fusion_Model = FusionModel(EN_model, freeze=True).to(device)
 Fusion_Model.to(device)
 
-weights = torch.load('/ho')
+weights = torch.load(weights)
 Fusion_Model.load_state_dict(weights)
 
 
