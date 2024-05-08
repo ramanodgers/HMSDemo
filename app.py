@@ -28,7 +28,7 @@ EN_model = EfficientNet(config)
 Fusion_Model = FusionModel(EN_model, freeze=True).to(device)
 Fusion_Model.to(device)
 
-weights = torch.load(weights)
+weights = torch.load(weights, map_location=device)
 Fusion_Model.load_state_dict(weights)
 
 
