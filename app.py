@@ -35,18 +35,19 @@ Fusion_Model.load_state_dict(weights)
 
 
 def greet(parquet_file, spec_file):
-    # path = "/home/ubuntu/temps/" + os.path.basename(parquet_file)  
-    # shutil.copyfile(parquet_file.name, path)
+
     parquet = pd.read_parquet(parquet_file.name) 
     spec = pd.read_parquet(spec_file.name) 
 
     X = EN_data_generation(parquet, spec)
     X = torch.tensor(X, dtype=torch.float32).to(device)
-    rocket_in = get_rocket_output(parquet)
+
+    rocket_in = get_rocket_output(rocket_model, parquet)
     feature_row = features_from_eeg([parquet], display=False).to(device)
     xg_in = get_xgboost_output(feature_row).to(device)
 
     outputs = Fusion_Model(X, rocket_in, xg_in)
+    
                     
     _, preds = torch.max(outputs, 1)
     label = config.LABEL_COLS[preds[0].item()]
@@ -62,7 +63,7 @@ demo = gr.Interface(
 
     title="EEG Classification (APPLIED CV COMS 4995)",
     description = description, 
-    live = True
+    live = False
 
 )
 demo.launch( share = True)

@@ -154,15 +154,16 @@ def features_from_eeg(eegs, display=False):
         df.set_index('time', inplace=True)
         df.reset_index(inplace=True)
 
-
+        print('about to call tsfresh ')
         # Call TSFresh on the data
         settings = tsfresh.feature_extraction.settings.EfficientFCParameters()
+        print('called settings')
         output = extract_features(df, column_id='id', column_sort='time', default_fc_parameters=settings)
-        
+        print('made it past tsfresh')
         return output
 
 
-def get_rocket_output(parquet):
+def get_rocket_output(rocket_model, parquet):
     pq = parquet
     middle = (len(pq)-2_000)//2
     pq = pq.iloc[middle:middle+2_000:2]
@@ -175,7 +176,7 @@ def get_rocket_output(parquet):
     x_batch = x_batch.rename(columns={"level_1": "timepoints"})
     x_batch = x_batch.set_index(['instances', 'timepoints'])
     x_batch = x_batch.fillna(0)
-    rocket_predictions = self.rocket_model.predict(x_batch)
+    rocket_predictions = rocket_model.predict(x_batch)
     rocket_predictions = torch.from_numpy(rocket_predictions.to_numpy())
     return rocket_predictions  
 
