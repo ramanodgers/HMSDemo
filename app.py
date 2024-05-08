@@ -15,7 +15,8 @@ weights = hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="model")
 
 
 description = ''' This is a Demo of our COMS 4995 Applied Computer Vision semester project: an ensemble method classification tool for EEG diagnoses.
-Drag and drop an eeg and spectrogram parquet file and (hopefully) you'll get your result 
+Drag and drop an eeg and spectrogram parquet file and (hopefully) you'll get your result. Example files are available in the repo. 
+The tsfresh feature extractor for the XGBoost model and our pytorch are not optimized for this small CPU environment and may take about a minute to run. 
 
 Authors: Raman Odgers, Akhil Golla, Vinayak Kannan, Sohan Kshirsagar
 
@@ -45,7 +46,7 @@ def greet(eeg_file, spectrogram_file):
     rocket_in = get_rocket_output(rocket_model, parquet)
 
     feature_row = features_from_eeg([parquet], display=False)
-    xg_out = get_xgboost_output(feature_row).to(device)
+    xg_out = get_xgboost_output(model,feature_row).to(device)
 
     outputs = Fusion_Model(X, rocket_in, xg_out)
     _, preds = torch.max(outputs, 1)
