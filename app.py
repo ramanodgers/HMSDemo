@@ -4,6 +4,7 @@ import joblib
 from sktime.utils import mlflow_sktime
 from utils import *
 from huggingface_hub import hf_hub_download
+import shutil
 
 REPO_ID = "ramanodgers/HMSensemble"
 FILENAME = "ensemble_9.pth"
@@ -32,7 +33,10 @@ weights = torch.load(weights, map_location=device)
 Fusion_Model.load_state_dict(weights)
 
 
-def greet(parquet):
+def greet(parquet_file):
+    path = "/home/ubuntu/temps/" + os.path.basename(parquet_file)  
+    shutil.copyfile(parquet_file.name, path)
+    parquet = pd.read_parquet(path) 
 
     X = EN_data_generation(parquet)
     X = torch.tensor(X, dtype=torch.float32).to(device)
@@ -50,7 +54,7 @@ def greet(parquet):
 
 demo = gr.Interface(
     fn=greet,
-    inputs=[gr.Dataframe()],
+    inputs=[gr.File()],
 
     outputs=[gr.Textbox(label="EEG class")],
 
