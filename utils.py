@@ -154,10 +154,8 @@ def features_from_eeg(eegs, display=False):
         df.set_index('time', inplace=True)
         df.reset_index(inplace=True)
 
-        print('about to call tsfresh ')
         # Call TSFresh on the data
         settings = tsfresh.feature_extraction.settings.EfficientFCParameters()
-        print('called settings')
         output = extract_features(df, column_id='id', column_sort='time', default_fc_parameters=settings)
         print('made it past tsfresh')
         return output
