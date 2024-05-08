@@ -162,7 +162,7 @@ def features_from_eeg(eegs, display=False):
         return output
 
 
-def get_rocket_output(self,parquet):
+def get_rocket_output(parquet):
     pq = parquet
     middle = (len(pq)-2_000)//2
     pq = pq.iloc[middle:middle+2_000:2]
@@ -184,7 +184,7 @@ def get_xgboost_output(xgboost_model,feature_row):
     xg_probs = xgboost_model.predict_proba(x)[0]
     return torch.tensor(xg_probs, dtype=torch.float32)
 
-def EN_data_generation(parquet):
+def EN_data_generation(parquet, spec_parquet):
     """
     Generates usable data from parquets
     """
@@ -194,9 +194,9 @@ def EN_data_generation(parquet):
     r = 0
     # spectrogram_file_path = self.paths.TRAIN_SPECTROGRAMS + str(row.spectrogram_id) + ".parquet"
     # spectrogram = pd.read_parquet(spectrogram_file_path).iloc[:,1:].values
-    spectrogram = parquet
+    spectrogram = spec_parquet.iloc[:,1:].values
     # eeg_file_path = self.paths.TRAIN_EEGS + str(row.eeg_id) + ".parquet"
-    # eeg = spectrogram_from_eeg(eeg_file_path)
+    eeg = parquet
 
     for region in range(4):
         img = spectrogram[r:r+300, region*100:(region+1)*100].T
