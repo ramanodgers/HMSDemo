@@ -8,3 +8,4 @@ gradio
 xgboost
 huggingface_hub
 librosa
+PyWavelets
