@@ -220,10 +220,11 @@ def EN_data_generation(parquet):
     y = np.zeros(6, dtype='float32')
     img = np.ones((128,256), dtype='float32')
     r = 0
-    spectrogram_file_path = self.paths.TRAIN_SPECTROGRAMS + str(row.spectrogram_id) + ".parquet"
-    spectrogram = pd.read_parquet(spectrogram_file_path).iloc[:,1:].values
-    eeg_file_path = self.paths.TRAIN_EEGS + str(row.eeg_id) + ".parquet"
-    eeg = spectrogram_from_eeg(eeg_file_path)
+    # spectrogram_file_path = self.paths.TRAIN_SPECTROGRAMS + str(row.spectrogram_id) + ".parquet"
+    # spectrogram = pd.read_parquet(spectrogram_file_path).iloc[:,1:].values
+    spectrogram = parquet
+    # eeg_file_path = self.paths.TRAIN_EEGS + str(row.eeg_id) + ".parquet"
+    # eeg = spectrogram_from_eeg(eeg_file_path)
 
     for region in range(4):
         img = spectrogram[r:r+300, region*100:(region+1)*100].T
@@ -239,8 +240,8 @@ def EN_data_generation(parquet):
         img = (img-mu)/(std+ep)
         img = np.nan_to_num(img, nan=0.0)
         X[14:-14, :, region] = img[:, 22:-22] / 2.0
-        img = eeg
-        X[:, :, 4:] = img
+        # img = eeg
+        # X[:, :, 4:] = img
 
     return X
 
