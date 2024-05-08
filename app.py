@@ -46,7 +46,7 @@ def greet(eeg_file, spectrogram_file):
     rocket_in = get_rocket_output(rocket_model, parquet)
 
     feature_row = features_from_eeg([parquet], display=False)
-    xg_out = get_xgboost_output(model,feature_row).to(device)
+    xg_out = get_xgboost_output(xg_model,feature_row).to(device)
 
     outputs = Fusion_Model(X, rocket_in, xg_out)
     _, preds = torch.max(outputs, 1)
