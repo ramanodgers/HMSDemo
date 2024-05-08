@@ -7,6 +7,7 @@ import torch.nn.functional as F
 from tsfresh import extract_features
 import timm
 import librosa
+import pywt
 
 class config:
     MODEL = "tf_efficientnet_b0"
