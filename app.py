@@ -34,12 +34,13 @@ weights = torch.load(weights, map_location=device)
 Fusion_Model.load_state_dict(weights)
 
 
-def greet(parquet_file):
+def greet(parquet_file, spec_file):
     # path = "/home/ubuntu/temps/" + os.path.basename(parquet_file)  
     # shutil.copyfile(parquet_file.name, path)
     parquet = pd.read_parquet(parquet_file.name) 
+    spec = pd.read_parquet(spec_file.name) 
 
-    X = EN_data_generation(parquet)
+    X = EN_data_generation(parquet, spec)
     X = torch.tensor(X, dtype=torch.float32).to(device)
     rocket_in = get_rocket_output(parquet)
     feature_row = features_from_eeg([parquet], display=False).to(device)
@@ -55,7 +56,7 @@ def greet(parquet_file):
 
 demo = gr.Interface(
     fn=greet,
-    inputs=[gr.File()],
+    inputs=[gr.File(), gr.File()],
 
     outputs=[gr.Textbox(label="EEG class")],
 
