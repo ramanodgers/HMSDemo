@@ -22,7 +22,7 @@ Authors: Raman Odgers, Akhil Golla, Vinayak Kannan, Sohan Kshirsagar
 #this needs to be changed to load weights from HF and path the support models
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")
-    rocket_model = mlflow_sktime.load_model(model_uri="/rocket/")
+    rocket_model = mlflow_sktime.load_model(model_uri="./rocket/")
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 EN_model = EfficientNet(config)

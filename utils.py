@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from tsfresh import extract_features
-
+import timm
 
 class config:
     MODEL = "tf_efficientnet_b0"
