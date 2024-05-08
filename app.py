@@ -59,4 +59,4 @@ demo = gr.Interface(
     live = True
 
 )
-demo.launch( share = False)
+demo.launch( share = True)
