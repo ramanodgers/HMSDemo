@@ -10,9 +10,7 @@ REPO_ID = "ramanodgers/HMSensemble"
 FILENAME = "ensemble_9.pth"
 
 xg_model = joblib.load(hf_hub_download(repo_id=REPO_ID, filename="xgboost_model.pkl"))
-weights = joblib.load(
-    hf_hub_download(repo_id=REPO_ID, filename=FILENAME)
-)
+weights = hf_hub_download(repo_id=REPO_ID, filename=FILENAME, repo_type="model")
 
 
 description = ''' This is a Demo of our COMS 4995 Applied Computer Vision semester project: an ensemble method classification tool for EEG diagnoses.
