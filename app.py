@@ -35,9 +35,9 @@ Fusion_Model.load_state_dict(weights)
 
 
 def greet(parquet_file):
-    path = "/home/ubuntu/temps/" + os.path.basename(parquet_file)  
-    shutil.copyfile(parquet_file.name, path)
-    parquet = pd.read_parquet(path) 
+    # path = "/home/ubuntu/temps/" + os.path.basename(parquet_file)  
+    # shutil.copyfile(parquet_file.name, path)
+    parquet = pd.read_parquet(parquet_file.name) 
 
     X = EN_data_generation(parquet)
     X = torch.tensor(X, dtype=torch.float32).to(device)
