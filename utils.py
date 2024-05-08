@@ -2,8 +2,9 @@ import tsfresh
 import numpy as np
 import pandas as pd
 import torch 
-import torch.nn as nn 
+import torch.nn as nn
 import torch.nn.functional as F
+from tsfresh import extract_features
 
 
 class config:
@@ -84,6 +85,29 @@ def spectrogram_from_eeg(parquet_path, display=False):
     return img
 
 
+USE_WAVELET = 'db8'
+NAMES = ['LL','LP','RP','RR']
+
+FEATS = [['Fp1','F7','T3','T5','O1'],
+         ['Fp1','F3','C3','P3','O1'],
+         ['Fp2','F8','T4','T6','O2'],
+         ['Fp2','F4','C4','P4','O2']]
+
+# DENOISE FUNCTION
+def maddest(d, axis=None):
+    return np.mean(np.absolute(d - np.mean(d, axis)), axis)
+
+def denoise(x, wavelet='haar', level=1):    
+    coeff = pywt.wavedec(x, wavelet, mode="per")
+    sigma = (1/0.6745) * maddest(coeff[-level])
+
+    uthresh = sigma * np.sqrt(2*np.log(len(x)))
+    coeff[1:] = (pywt.threshold(i, value=uthresh, mode='hard') for i in coeff[1:])
+
+    ret=pywt.waverec(coeff, wavelet, mode='per')
+    
+    return ret
+
 def features_from_eeg(eegs, display=False):
     for eeg in eegs:
         ids_data = np.array([], dtype=np.int64)
@@ -125,7 +149,7 @@ def features_from_eeg(eegs, display=False):
         RR = signals[8] + signals[9] + signals[10] + signals[11]
         RP = signals[12] + signals[13] + signals[14] + signals[15]
 
-        id_data = np.full(10000, eeg_id)
+        id_data = np.full(10000, 1)
         time = np.arange(0, 10000, 1)
 
         LL = np.expand_dims(LL, axis=1)
@@ -150,45 +174,10 @@ def features_from_eeg(eegs, display=False):
 
 
         # Call TSFresh on the data
-        log.critical(f"Extraction started")
         settings = tsfresh.feature_extraction.settings.EfficientFCParameters()
-        output = extract_features(df,
-                                                         column_id='id', column_sort='time',
-                                                          default_fc_parameters=settings)
-        if len(output) > 1:
-            print(output)
-        output.insert(0, 'eeg_id', None)
-        output['eeg_id'] = eeg_id
-        try:
-            df1 = pd.read_csv(path_for_file)
-            df_concat = pd.concat([df1, output], axis=0, ignore_index=True, keys=None)
-            df_concat.drop(df_concat.columns[df_concat.columns.str.contains('unnamed', case=False)], axis=1, inplace=True)
-            df_concat.to_csv(path_for_file)
-            print(str(len(df_concat) / len(ids)) + '%')
-        except Exception as e:
-            print(e)
-            output.to_csv(path_for_file)
-
-
-    signals = np.stack([ids_data, times_data, LLS, LPS, RRS, RPS], axis = 1)
-
-    df = pd.DataFrame(signals)
-
-    # Rename columns
-    df.columns = ['id', 'time', 'LL', 'LP', 'RR', 'RP']
-    # Set the index
-    df.set_index('time', inplace=True)
-    # Reset the index
-    df.reset_index(inplace=True)
-
-    # Call TSFresh on the data
-    log.critical(f"Extraction started")
-    settings = tsfresh.feature_extraction.settings.EfficientFCParameters()
-    features_filtered_direct = extract_features(df,
-                                                     column_id='id', column_sort='time',
-                                                      default_fc_parameters=settings)
-    
-    return features_filtered_direct
+        output = extract_features(df, column_id='id', column_sort='time', default_fc_parameters=settings)
+        
+        return output
 
 
 def get_rocket_output(self,parquet):
