@@ -6,6 +6,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from tsfresh import extract_features
 import timm
+import librosa
 
 class config:
     MODEL = "tf_efficientnet_b0"
@@ -28,8 +29,6 @@ def spectrogram_from_eeg(parquet_path, display=False):
     # VARIABLE TO HOLD SPECTROGRAM
     img = np.zeros((128,256,4),dtype='float32')
 
-    if display:
-        plt.figure(figsize=(10,7))
     signals = []
     for k in range(4):
         COLS = FEATS[k]
@@ -63,24 +62,6 @@ def spectrogram_from_eeg(parquet_path, display=False):
 
         # AVERAGE THE 4 MONTAGE DIFFERENCES
         img[:,:,k] /= 4.0
-
-        if display:
-            plt.subplot(2,2,k+1)
-            plt.imshow(img[:,:,k],aspect='auto',origin='lower')
-            # plt.title(f'EEG {eeg_id} - Spectrogram {NAMES[k]}')
-
-    if display:
-        plt.show()
-        plt.figure(figsize=(10,5))
-        offset = 0
-        for k in range(4):
-            if k>0: offset -= signals[3-k].min()
-            plt.plot(range(10_000),signals[k]+offset,label=NAMES[3-k])
-            offset += signals[3-k].max()
-        plt.legend()
-        # plt.title(f'EEG {eeg_id} Signals')
-        plt.show()
-        print(); print('#'*25); print()
 
     return img
 
