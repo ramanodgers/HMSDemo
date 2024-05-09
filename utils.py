@@ -243,6 +243,8 @@ class EfficientNet(nn.Module):
         """
         Reshapes input (128, 256, 8) -> (512, 512, 3) monotone image.
         """
+        new_shape = x.shape
+        x = x.reshape(1, *new_shape)
         # === Get spectrograms ===
         spectrograms = [x[:, :, :, i:i+1] for i in range(4)]
         spectrograms = torch.cat(spectrograms, dim=1)
