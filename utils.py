@@ -157,7 +157,6 @@ def features_from_eeg(eegs, display=False):
         # Call TSFresh on the data
         settings = tsfresh.feature_extraction.settings.EfficientFCParameters()
         output = extract_features(df, column_id='id', column_sort='time', default_fc_parameters=settings)
-        print('made it past tsfresh')
         return output
 
 
@@ -297,10 +296,10 @@ class FusionModel(nn.Module):
         EN_features = self.EfficientNet(X)
         EN_features = F.relu(self.encoder(EN_features))
         try:
-            combined_features = torch.cat((EN_features, rocket.squeeze(), xg), dim=1)
+            combined_features = torch.cat((EN_features.squeeze(), rocket.squeeze(), xg), dim=0)
         except:
-            # print(EN_features, rocket.squeeze(), xg)
+            print(EN_features, rocket.squeeze(), xg)
             combined_features = torch.cat((EN_features, rocket.squeeze().unsqueeze(0), xg), dim=1)
             # raise
         out = self.classifier(combined_features)
-        return F.softmax(out, dim = 1)
+        return F.softmax(out, dim = -1)

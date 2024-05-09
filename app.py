@@ -49,8 +49,8 @@ def greet(eeg_file, spectrogram_file):
     xg_out = get_xgboost_output(xg_model,feature_row).to(device)
 
     outputs = Fusion_Model(X, rocket_in, xg_out)
-    _, preds = torch.max(outputs, 1)
-    label = config.LABEL_COLS[preds[0].item()]
+    _, preds = torch.max(outputs, 0)
+    label = config.LABEL_COLS[preds.item()]
 
     return (label)
 
